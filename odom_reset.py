@@ -45,7 +45,7 @@ if __name__ == '__main__':
     # necessary input args
     ap = argparse.ArgumentParser()
     ap.add_argument("-b", "--bag", required=True, help="input bag file")
-    ap.add_argument("-o", "--output_bag", required=True, help="output new bag path")
+    ap.add_argument("-o", "--output_bag", required=True, help="path where to output new bag")
     args = vars(ap.parse_args())
 
     # check if bag exists
@@ -60,11 +60,11 @@ if __name__ == '__main__':
     # initialize classes
     rospy.init_node('odom_reset', anonymous=True)
     
-    odom_msg = '/ibeo_interface_node/ibeo/odometry'
-    vn100_msg = None
-    vn100_counter = 0
-    vn100_rot_mat = None
-    vn100_trans = [0, 0, 0]
+    odom_topic = '/ibeo_interface_node/ibeo/odometry'
+    odom_msg = None
+    odom_counter = 0
+    odom_rot_mat = None
+    odom_trans = [0, 0, 0]
    
     # get rosbag file path and name
     bag_path = os.path.abspath(args["bag"])
@@ -82,22 +82,22 @@ if __name__ == '__main__':
     for topic, msg, t in bag.read_messages():
 
         # read topics in the rosbag
-        if topic == odom_msg:
-            if vn100_counter == 0:
-                vn100_rot_mat = quaternion_matrix([msg.pose.pose.orientation.x,
+        if topic == odom_topic:
+            if odom_counter == 0:
+                odom_rot_mat = quaternion_matrix([msg.pose.pose.orientation.x,
                                                    msg.pose.pose.orientation.y,
                                                    msg.pose.pose.orientation.z,
                                                    msg.pose.pose.orientation.w])
 
-                vn100_trans[0] = msg.pose.pose.position.x
-                vn100_trans[1] = msg.pose.pose.position.y
-                vn100_trans[2] = msg.pose.pose.position.z
-                vn100_msg = replace_odometry(msg,vn100_rot_mat, vn100_trans)
-                vn100_counter = vn100_counter+1
+                odom_trans[0] = msg.pose.pose.position.x
+                odom_trans[1] = msg.pose.pose.position.y
+                odom_trans[2] = msg.pose.pose.position.z
+                odom_msg = replace_odometry(msg,odom_rot_mat, odom_trans)
+                odom_counter = odom_counter+1
             else:
-                vn100_msg = replace_odometry(msg, vn100_rot_mat, vn100_trans)
-                vn100_counter = vn100_counter + 1
-            output_bag.write(odom_msg, vn100_msg, t)
+                odom_msg = replace_odometry(msg, odom_rot_mat, odom_trans)
+                odom_counter = odom_counter + 1
+            output_bag.write(odom_topic, odom_msg, t)
 
         # not changed topic
         else:
