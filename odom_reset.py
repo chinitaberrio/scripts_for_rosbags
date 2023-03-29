@@ -45,7 +45,7 @@ if __name__ == '__main__':
     # necessary input args
     ap = argparse.ArgumentParser()
     ap.add_argument("-b", "--bag", required=True, help="input bag file")
-    ap.add_argument("-o", "--output_bag", required=True, help="path where to output new bag")
+    ap.add_argument("-odom", "--odom_topic", default='/ibeo_interface_node/ibeo/odometry', help="odometry topic")
     args = vars(ap.parse_args())
 
     # check if bag exists
@@ -53,14 +53,10 @@ if __name__ == '__main__':
         rospy.logerr("No Bag specified!")
         exit(1)
 
-    # check if output bag path exists
-    if not os.path.exists(args["output_bag"]):
-        os.mkdir(args["output_bag"])
-
     # initialize classes
     rospy.init_node('odom_reset', anonymous=True)
     
-    odom_topic = '/ibeo_interface_node/ibeo/odometry'
+    odom_topic = os.path.abspath(args["odom_topic"])
     odom_msg = None
     odom_counter = 0
     odom_rot_mat = None
@@ -69,14 +65,16 @@ if __name__ == '__main__':
     # get rosbag file path and name
     bag_path = os.path.abspath(args["bag"])
     bag_name = os.path.basename(bag_path)
+    output_bag_name = bag_name.replace(".bag","_fixed_odom.bag")
+    
     # output bag path and name
-    output_bag_name = os.path.join(args["output_bag"], bag_name)
-    print("Write new bag into: " + output_bag_name)
+    output_bag_path = os.path.join(os.path.dirname(bag_path), output_bag_name)
+    print("Write new bag into: " + output_bag_path)
 
     # get rosbag info
     bag = rosbag.Bag(args["bag"])
     rospy.loginfo('Start reading bag ' + args["bag"])
-    output_bag = rosbag.Bag(output_bag_name, 'w')
+    output_bag = rosbag.Bag(output_bag_path, 'w')
 
     # start processing when play back the rosbag
     for topic, msg, t in bag.read_messages():
@@ -99,10 +97,13 @@ if __name__ == '__main__':
                 odom_counter = odom_counter + 1
             output_bag.write(odom_topic, odom_msg, t)
 
-        # not changed topic
+        # rewrite the rosbag
         else:
             output_bag.write(topic, msg, t)
 
         if rospy.is_shutdown():
             break
 
+    bag.close()
+    output_bag.close()
+    rospy.loginfo('Done writing new bag')
