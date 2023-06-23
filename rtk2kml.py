@@ -53,9 +53,10 @@ class Interface:
         pre_status = 999
         for msg_ind in range(0, self.bag_helper.get_msg_count()):
             self.msg = self.bag_helper.read_msg(msg_ind)
-            stdev = max(self.msg.lat_stdev, self.msg.lon_stdev)
+            #stdev = max(self.msg.lat_stdev, self.msg.lon_stdev)
+            status_sol = int(self.msg.pos_type.type)
 
-            if stdev < 1.0:
+            if status_sol >= 52 and status_sol <= 56:
                 cur_status = 0
                 if pre_status != cur_status:
                     if pre_status != 999:
@@ -63,7 +64,7 @@ class Interface:
                     print('    <Placemark>\n      <styleUrl>#greenLineGreenPoly</styleUrl>\n      <LineString>\n        <extrude>1</extrude>\n        <tessellate>1</tessellate>\n        <altitudeMode>absolute</altitudeMode>\n        <coordinates> ')
                 print('          {},{},{}'.format(self.msg.lon, self.msg.lat, self.msg.hgt + 10))
                 pre_status = cur_status
-            elif stdev < 5.0:
+            elif status_sol >= 34 and status_sol <= 51:
                 cur_status = 1
                 if pre_status != cur_status:
                     if pre_status != 999:
