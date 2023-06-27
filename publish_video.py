@@ -32,7 +32,7 @@ def main():
 
     args = parser.parse_args()
 
-    print "Publishing %s." % (args.video_file)
+    print ("Publishing %s." % (args.video_file))
 
     # Set up node.
     rospy.init_node("video_publisher", anonymous=True)
@@ -51,7 +51,7 @@ def main():
         tmp, img = video.retrieve()
 
         if not tmp:
-            print "Could not grab frame."
+            print ("Could not grab frame.")
             break
 
         try:
@@ -62,7 +62,7 @@ def main():
             img_pub.publish(img_msg)
 
         except CvBridgeError as err:
-            print err
+            print (err)
 
         rate.sleep()
 
