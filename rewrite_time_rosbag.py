@@ -28,7 +28,7 @@ if __name__ == '__main__':
         for topic, msg, t in rosbag.Bag(bag_path).read_messages():
             # This also replaces tf timestamps under the assumption 
             # that all transforms in the message share the same timestamp
-            if topic == "/tf" and msg.transforms:
+            if (topic == "/tf" or topic == "/tf_static") and msg.transforms:
                 outbag.write(topic, msg, msg.transforms[0].header.stamp)
             else:
                 outbag.write(topic, msg, msg.header.stamp if msg._has_header else t)

@@ -23,12 +23,13 @@ if __name__ == '__main__':
     ap.add_argument("-config", "--config_file", required=True, help=".yaml configuration file")
     args = vars(ap.parse_args())
 
-    # check if bag exists
     if args["bag"] is None:
         rospy.logerr("No Bag specified!")
         exit(1)
+    if args["config_file"] is None:
+        rospy.logerr("No configuration file specified!")
+        exit(1)
 
-    # initialize classes
     rospy.init_node('rosbag_health_check', anonymous=True)
    
     # get rosbag file path and name
@@ -43,8 +44,6 @@ if __name__ == '__main__':
             print(exc)
 
     topics_list = list(topics_config.keys())
-    print(topics_list)
-
     found_report = dict(zip(topics_list, [False]*len(topics_list)))
     sync_times = {key: {"First": None, "Last": None, "Counter": 0} for key in topics_list}
     
