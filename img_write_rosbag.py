@@ -26,23 +26,17 @@ if __name__ == '__main__':
     cap = cv2.VideoCapture(args["video_file"])
     bridge = CvBridge()
 
-    # initialize ros
     rospy.init_node('img_write')
 
-    frame_info = '/gmsl/' + args["video_file"][-7:-5] + '/frame_info'
-    camera_info = '/gmsl/' + args["video_file"][-7:-5] + '/camera_info'
-    publish_topic = '/gmsl/' + args["video_file"][-7:-5] + '/image_color'
+    frame_info = '/sekonix_camera/' + args["video_file"][-16:-4] + '/frame_info'
+    camera_info = '/sekonix_camera/' + args["video_file"][-16:-4] + '/camera_info'
+    image_color = '/sekonix_camera/' + args["video_file"][-16:-4] + '/image_color'
 
-    pubs = {}
-    tf_static_msg = None
-    camera_info_flag = False
     image_counter = 0
-
-    # start reading rosbags for frame_info
     bag = rosbag.Bag(args["bag_file"])
     output_bag_name = os.path.join(args["output_bag_path"], 'output.bag')
     output_bag = rosbag.Bag(output_bag_name,'w')
-    pub_img = rospy.Publisher(publish_topic, Image, queue_size=10)
+
     rospy.loginfo('Start read')
 
     for topic, msg, t in bag.read_messages():
@@ -50,7 +44,7 @@ if __name__ == '__main__':
         if args["output_bag_path"]:
             output_bag.write(topic, msg, t)
 
-        # publish image messages read from h264 files
+        # publish image messages read from mp4 files
         if topic == frame_info:
 
             # start publishing images
@@ -68,13 +62,11 @@ if __name__ == '__main__':
                 if ret == False:
                     break
                 img_msg = bridge.cv2_to_imgmsg(image_frame, encoding="bgr8")
-                img_msg.header.frame_id = 'camera_link'
+                img_msg.header.frame_id = msg.header.frame_id
                 img_msg.header.stamp = msg.header.stamp
-                pub_img.publish(img_msg)
                 if args["output_bag_path"]:
-                    output_bag.write(publish_topic, img_msg, msg.header.stamp)
+                    output_bag.write(image_color, img_msg, t)
                 image_counter = image_counter + 1
-
 
         if rospy.is_shutdown():
             break
