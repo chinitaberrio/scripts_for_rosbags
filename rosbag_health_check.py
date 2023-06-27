@@ -43,6 +43,7 @@ if __name__ == '__main__':
             print(exc)
 
     topics_list = list(topics_config.keys())
+    print(topics_list)
 
     found_report = dict(zip(topics_list, [False]*len(topics_list)))
     sync_times = {key: {"First": None, "Last": None, "Counter": 0} for key in topics_list}
@@ -67,20 +68,27 @@ if __name__ == '__main__':
     start_times = [inner_dict['First'] for inner_dict in sync_times.values()]
     start_times_filter = list(filter(lambda item: item is not None, start_times))
     start_time = kde_estimate_maxima(np.array(start_times_filter))
+    end_times = [inner_dict['Last'] for inner_dict in sync_times.values()]
+    end_times_filter = list(filter(lambda item: item is not None, end_times))
+    end_time = kde_estimate_maxima(np.array(end_times_filter))
+    total_duration = end_time - start_time
 
+    print ('_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-')
     for topic in topics_list:
-        print(topic)
         if topics_config[topic]['required_in_rosbag'] and found_report[topic]:
             if topics_config[topic]['required_frequency_check']:
-                frequency = sync_times[topic]['Counter']/(sync_times[topic]['Last'] - sync_times[topic]['First'])
-                print(frequency)
-                if frequency - float(topics_config[topic]['rate'])  > 0.1:
-                    print ('Topic {} has missing data or frequency is not correct!'.format(topic))
-
+                duration = sync_times[topic]['Last'] - sync_times[topic]['First']
+                frequency = sync_times[topic]['Counter']/duration
+                if  (float(topics_config[topic]['rate']) - frequency > 0.11) :
+                    print ('Topic {} frequency is not correct!'.format(topic))
+                    print ('       Expected frequency {},  actual frequency {}'.format(topics_config[topic]['rate'], str(frequency)))
+                if abs (duration - total_duration) > 5.0:
+                    print ('Topic {} has missing data!'.format(topic)) 
             if abs (sync_times[topic]['First'] - start_time) > 5.0:
                 print ('Topic {} is out of sync!'.format(topic)) 
-        else:
+                print ('       Offset:  {} '.format(str((sync_times[topic]['First'] - start_time))))
+        elif topics_config[topic]['required_in_rosbag'] and not found_report[topic]:
             print ('Topic {} is required, but it was not found in the rosbag!'.format(topic))
-
     bag.close()
+    print ('_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-')
     rospy.loginfo('End of the health check')

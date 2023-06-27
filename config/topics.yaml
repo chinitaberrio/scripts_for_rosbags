@@ -1,212 +1,174 @@
 # Topics of interest and minimum acceptable frequencies (Hz) of their respective messages
 
-
 /gps/fix:
-    topic_name: "/gps/fix"
     required_in_rosbag: yes
     required_frequency_check: no
     rate: xx
     frame_id: gps
 /gps/gps:
-    topic_name: "/gps/gps"
     required_in_rosbag: yes
     required_frequency_check: no
     rate: xx
     frame_id: gps
 /gps/imu:
-    topic_name: "/gps/imu"
     required_in_rosbag: yes
     required_frequency_check: no
     rate: xx
     frame: imu_link
 /ibeo_interface_node/ibeo/lidar/dynamic:
-    topic_name: "/ibeo_interface_node/ibeo/lidar/dynamic"
     required_in_rosbag: yes
     required_frequency_check: yes
     rate: 25
     frame: base_link
 /ibeo_interface_node/ibeo/lidar/static:
-    topic_name: "/ibeo_interface_node/ibeo/lidar/static"
     required_in_rosbag: yes
     required_frequency_check: yes
     rate: 25
     frame: base_link
 /ibeo_interface_node/ibeo/objects:
-    topic_name: "/ibeo_interface_node/ibeo/objects"
     required_in_rosbag: yes
     required_frequency_check: no
     rate: xx
     frame: base_link
 /ibeo_interface_node/ibeo/odometry:
-    topic_name: "/ibeo_interface_node/ibeo/odometry"
     required_in_rosbag: yes
     required_frequency_check: yes
     rate: 25
     frame: base_link
 /ibeo_interface_node/ibeo/gnss:
-    topic_name: "/ibeo_interface_node/ibeo/gnss"
     required_in_rosbag: yes
     required_frequency_check: no
     rate: xx
     frame: base_link
 /ibeo_interface_node/xsens/IMU:
-    topic_name: "/ibeo_interface_node/xsens/IMU"
     required_in_rosbag: yes
     required_frequency_check: yes
     rate: 81
     frame: base_link
 /imu/data_raw:
-    topic_name: "/imu/data_raw"
     required_in_rosbag: yes
     required_frequency_check: yes
-    rate: 87
+    rate: 125
     frame: imu_link
-novatel_best:
-    topic_name: "/novatel/oem7/best"
-    required_in_rosbag: no
+/novatel/oem7/bestpos:
+    required_in_rosbag: yes
     required_frequency_check: no
     rate: xx
     frame: gps
-/novatel/oem7/ins:
-    topic_name: "/novatel/oem7/ins"
+/novatel/oem7/inspva:
     required_in_rosbag: no
     required_frequency_check: no
     rate: xx
     frame: gps
 /novatel/oem7/odom:
-    topic_name: "/novatel/oem7/odom"
     required_in_rosbag: yes
     required_frequency_check: no
     rate: xx
     frame: base_link
 /novatel/oem7/time:
-    topic_name: "/novatel/oem7/time"
     required_in_rosbag: yes
     required_frequency_check: no
     rate: xx
     frame: gps
 /ouster/imu_packets:
-    topic_name: "/ouster/imu_packets"
-    required_in_rosbag: yes
-    required_frequency_check: yes
+    required_in_rosbag: no
+    required_frequency_check: no
     rate: 100
     frame: xx
 /ouster/lidar_packets:
-    topic_name: "/ouster/lidar_packets"
-    required_in_rosbag: yes
-    required_frequency_check: yes
+    required_in_rosbag: no
+    required_frequency_check: no
     rate: 644
     frame: xx
 /ouster/imu:
-    topic_name: "/ouster/imu"
     required_in_rosbag: no
     required_frequency_check: yes
     rate: 100
     frame: os_sensor
 /ouster/points:
-    topic_name: "/ouster/points"
     required_in_rosbag: yes
     required_frequency_check: yes
     rate: 10
     frame: os_sensor
 /ouster/metadata:
-    topic_name: "/ouster/metadata"
     required_in_rosbag: yes
     required_frequency_check: no
     rate: xx
     frame: xx
 #verify the transformations  
 /tf_static:
-    topic_name: "/tf_static"
     required_in_rosbag: yes
     required_frequency_check: no
     rate: xx
     frame: xx 
 /tf:
-    topic_name: "/tf"
     required_in_rosbag: yes
     required_frequency_check: no
     rate: xx
     frame: xx
 # image data
 /sekonix_camera/port_a_cam_0/camera_info:
-    topic_name: "/sekonix_camera/port_a_cam_0/camera_info"
     required_in_rosbag: yes
     required_frequency_check: yes
     rate: 30.0
     frame: port_a_cam_0 
 /sekonix_camera/port_a_cam_1/camera_info:
-    topic_name: "/sekonix_camera/port_a_cam_1/camera_info"
     required_in_rosbag: yes
     required_frequency_check: yes
     rate: 30.0
 /sekonix_camera/port_b_cam_0/camera_info:
-    topic_name: "/sekonix_camera/port_b_cam_0/camera_info"
     required_in_rosbag: yes
     required_frequency_check: yes
     rate: 30.0
 /sekonix_camera/port_b_cam_1/camera_info:
-    topic_name: "/sekonix_camera/port_b_cam_1/camera_info"
     required_in_rosbag: yes
     required_frequency_check: yes
     rate: 30.0
 /sekonix_camera/port_c_cam_0/camera_info:
-    topic_name: "/sekonix_camera/port_c_cam_0/camera_info"
     required_in_rosbag: yes
     required_frequency_check: yes
     rate: 30.0
 /sekonix_camera/port_c_cam_1/camera_info:
-    topic_name: "/sekonix_camera/port_c_cam_1/camera_info"
     required_in_rosbag: yes
     required_frequency_check: yes
     rate: 30.0
 /sekonix_camera/port_d_cam_0/camera_info:
-    topic_name: "/sekonix_camera/port_d_cam_0/camera_info"
     required_in_rosbag: yes
     required_frequency_check: yes
     rate: 30.0
 /sekonix_camera/port_d_cam_1/camera_info:
-    topic_name: "/sekonix_camera/port_d_cam_1/camera_info"
     required_in_rosbag: yes
     required_frequency_check: yes
     rate: 30.0
 /sekonix_camera/port_a_cam_0/frame_info:
-    topic_name: "/sekonix_camera/port_a_cam_0/frame_info"
     required_in_rosbag: yes
     required_frequency_check: yes
     rate: 30.0
 /sekonix_camera/port_a_cam_1/frame_info:
-    topic_name: "/sekonix_camera/port_a_cam_1/frame_info"
     required_in_rosbag: yes
     required_frequency_check: yes
     rate: 30.0
 /sekonix_camera/port_b_cam_0/frame_info:
-    topic_name: "/sekonix_camera/port_b_cam_0/frame_info"
     required_in_rosbag: yes
     required_frequency_check: yes
     rate: 30.0
 /sekonix_camera/port_b_cam_1/frame_info:
-    topic_name: "/sekonix_camera/port_b_cam_1/frame_info"
     required_in_rosbag: yes
     required_frequency_check: yes
     rate: 30.0
 /sekonix_camera/port_c_cam_0/frame_info:
-    topic_name: "/sekonix_camera/port_c_cam_0/frame_info"
     required_in_rosbag: yes
     required_frequency_check: yes
     rate: 30.0
 /sekonix_camera/port_c_cam_1/frame_info:
-    topic_name: "/sekonix_camera/port_c_cam_1/frame_info"
     required_in_rosbag: yes
     required_frequency_check: yes
     rate: 30.0
 /sekonix_camera/port_d_cam_0/frame_info:
-    topic_name: "/sekonix_camera/port_d_cam_0/frame_info"
     required_in_rosbag: yes
     required_frequency_check: yes
     rate: 30.0
 /sekonix_camera/port_d_cam_1/frame_info:
-    topic_name: "/sekonix_camera/port_d_cam_1/frame_info"
     required_in_rosbag: yes
     required_frequency_check: yes
     rate: 30.0
