@@ -17,12 +17,12 @@
     frame: imu_link
 /ibeo_interface_node/ibeo/lidar/dynamic:
     required_in_rosbag: yes
-    required_frequency_check: yes
+    required_frequency_check: no
     rate: 25
     frame: base_link
 /ibeo_interface_node/ibeo/lidar/static:
     required_in_rosbag: yes
-    required_frequency_check: yes
+    required_frequency_check: no
     rate: 25
     frame: base_link
 /ibeo_interface_node/ibeo/objects:
@@ -91,7 +91,7 @@
     rate: 10
     frame: os_sensor
 /ouster/metadata:
-    required_in_rosbag: yes
+    required_in_rosbag: no
     required_frequency_check: no
     rate: xx
     frame: xx
