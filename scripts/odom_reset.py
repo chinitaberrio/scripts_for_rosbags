@@ -3,6 +3,8 @@ import rosbag
 import argparse
 import os, sys
 from tf.msg import tfMessage
+from tf2_msgs.msg import TFMessage
+import tf_conversions
 import numpy as np
 from tf.transformations import quaternion_from_euler, euler_from_quaternion, quaternion_multiply, quaternion_inverse, \
     quaternion_matrix, quaternion_from_matrix, inverse_matrix, euler_from_matrix
@@ -61,7 +63,12 @@ if __name__ == '__main__':
     odom_counter = 0
     odom_rot_mat = None
     odom_trans = [0, 0, 0]
-   
+    tf_odom = geometry_msgs.msg.TransformStamped()
+    tf_odom.header.frame_id = "odom_init"
+    tf_odom.child_frame_id = "base_link"
+    tf_static_msg_queue = deque()
+    tf_static_msg = None
+    first = True
     # get rosbag file path and name
     bag_path = os.path.abspath(args["bag"])
     bag_name = os.path.basename(bag_path)
@@ -78,9 +85,10 @@ if __name__ == '__main__':
 
     # start processing when play back the rosbag
     for topic, msg, t in bag.read_messages():
-
         # read topics in the rosbag
         if topic == odom_topic:
+            tf_msg = tfMessage()
+            
             if odom_counter == 0:
                 odom_rot_mat = quaternion_matrix([msg.pose.pose.orientation.x,
                                                    msg.pose.pose.orientation.y,
@@ -95,7 +103,36 @@ if __name__ == '__main__':
             else:
                 odom_msg = replace_odometry(msg, odom_rot_mat, odom_trans)
                 odom_counter = odom_counter + 1
+                
+            tf_odom.header.stamp = odom_msg.header.stamp
+            tf_odom.transform.translation.x = odom_msg.pose.pose.position.x
+            tf_odom.transform.translation.y = odom_msg.pose.pose.position.y
+            tf_odom.transform.translation.z = odom_msg.pose.pose.position.z
+            tf_odom.transform.rotation.x = odom_msg.pose.pose.orientation.x
+            tf_odom.transform.rotation.y = odom_msg.pose.pose.orientation.y
+            tf_odom.transform.rotation.z = odom_msg.pose.pose.orientation.z
+            tf_odom.transform.rotation.w = odom_msg.pose.pose.orientation.w
+
+            tf_msg.transforms.append(tf_odom)
+            output_bag.write('/tf', tf_msg, t)
             output_bag.write(odom_topic, odom_msg, t)
+
+        if first:  # Change this for the other project
+            tf2_msg = TFMessage()
+            tf2_lidar = geometry_msgs.msg.TransformStamped()
+            tf2_lidar.header.frame_id = "base_link"
+            tf2_lidar.child_frame_id = "os_sensor"
+            tf2_lidar.header.stamp = msg.header.stamp
+            tf2_lidar.transform.translation.x = 0.79
+            tf2_lidar.transform.translation.y = 0
+            tf2_lidar.transform.translation.z = 1.7
+            tf2_lidar.transform.rotation.x = 0.01
+            tf2_lidar.transform.rotation.y = 0.005
+            tf2_lidar.transform.rotation.z = -0.00005
+            tf2_lidar.transform.rotation.w = 0.999937
+            tf2_msg.transforms.append(tf2_lidar)
+            output_bag.write('/tf_static', tf2_msg, t)
+            first = False
 
         # rewrite the rosbag
         else:
@@ -103,6 +140,7 @@ if __name__ == '__main__':
 
         if rospy.is_shutdown():
             break
+
 
     bag.close()
     output_bag.close()
