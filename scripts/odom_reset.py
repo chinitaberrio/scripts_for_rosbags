@@ -41,6 +41,22 @@ def replace_odometry(msg, i_rot, i_trans):
 
     return odometry_msg
 
+def add_tfstatic(msg):
+    #hardcoded values at the moment
+    tf2_lidar = geometry_msgs.msg.TransformStamped()
+    tf2_lidar.header.frame_id = "base_link"
+    tf2_lidar.child_frame_id = "os_sensor"
+    tf2_lidar.header.stamp = msg.header.stamp
+    tf2_lidar.transform.translation.x = 0.79
+    tf2_lidar.transform.translation.y = 0
+    tf2_lidar.transform.translation.z = 1.7
+    tf2_lidar.transform.rotation.x = 0.01
+    tf2_lidar.transform.rotation.y = 0.005
+    tf2_lidar.transform.rotation.z = -0.00005
+    tf2_lidar.transform.rotation.w = 0.999937
+    msg.transforms.append(tf2_lidar)
+
+    return msg
 
 if __name__ == '__main__':
 
@@ -117,6 +133,15 @@ if __name__ == '__main__':
             output_bag.write('/tf', tf_msg, t)
             output_bag.write(odom_topic, odom_msg, t)
 
+        #elif topic == '/tf_static':
+            #adding the missing transformations
+        #    tf2_msg = add_tfstatic(msg)
+        #    output_bag.write('/tf_static', tf2_msg, t)
+
+        # rewrite the rosbag
+        else:
+            output_bag.write(topic, msg, t)
+
         if first:  # Change this for the other project
             tf2_msg = TFMessage()
             tf2_lidar = geometry_msgs.msg.TransformStamped()
@@ -133,10 +158,6 @@ if __name__ == '__main__':
             tf2_msg.transforms.append(tf2_lidar)
             output_bag.write('/tf_static', tf2_msg, t)
             first = False
-
-        # rewrite the rosbag
-        else:
-            output_bag.write(topic, msg, t)
 
         if rospy.is_shutdown():
             break

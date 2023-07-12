@@ -20,6 +20,7 @@ def main():
 
     with Bag(output_bag, 'w') as o: 
         for ifile in bags_list:
+            print (ifile)
             with Bag(ifile, 'r') as ib:
                 for topic, msg, t in ib:
                     o.write(topic, msg, t)
