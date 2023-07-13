@@ -64,6 +64,8 @@ if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument("-b", "--bag", required=True, help="input bag file")
     ap.add_argument("-odom", "--odom_topic", default='/ibeo_interface_node/ibeo/odometry', help="odometry topic")
+    ap.add_argument("-odom_tf", "--odom_tf", default=False, help="odometry topic")
+    ap.add_argument("-add_tf_s", "--add_tf_static", default=False, help="odometry topic")
     args = vars(ap.parse_args())
 
     # check if bag exists
@@ -103,7 +105,6 @@ if __name__ == '__main__':
     for topic, msg, t in bag.read_messages():
         # read topics in the rosbag
         if topic == odom_topic:
-            tf_msg = tfMessage()
             
             if odom_counter == 0:
                 odom_rot_mat = quaternion_matrix([msg.pose.pose.orientation.x,
@@ -119,26 +120,20 @@ if __name__ == '__main__':
             else:
                 odom_msg = replace_odometry(msg, odom_rot_mat, odom_trans)
                 odom_counter = odom_counter + 1
-                
-            tf_odom.header.stamp = odom_msg.header.stamp
-            tf_odom.transform.translation.x = odom_msg.pose.pose.position.x
-            tf_odom.transform.translation.y = odom_msg.pose.pose.position.y
-            tf_odom.transform.translation.z = odom_msg.pose.pose.position.z
-            tf_odom.transform.rotation.x = odom_msg.pose.pose.orientation.x
-            tf_odom.transform.rotation.y = odom_msg.pose.pose.orientation.y
-            tf_odom.transform.rotation.z = odom_msg.pose.pose.orientation.z
-            tf_odom.transform.rotation.w = odom_msg.pose.pose.orientation.w
-
-            tf_msg.transforms.append(tf_odom)
-            output_bag.write('/tf', tf_msg, t)
             output_bag.write(odom_topic, odom_msg, t)
 
-        #elif topic == '/tf_static':
-            #adding the missing transformations
-        #    tf2_msg = add_tfstatic(msg)
-        #    output_bag.write('/tf_static', tf2_msg, t)
-
-        # rewrite the rosbag
+            if (args["odom_tf"]):
+                tf_msg = tfMessage()   
+                tf_odom.header.stamp = odom_msg.header.stamp
+                tf_odom.transform.translation.x = odom_msg.pose.pose.position.x
+                tf_odom.transform.translation.y = odom_msg.pose.pose.position.y
+                tf_odom.transform.translation.z = odom_msg.pose.pose.position.z
+                tf_odom.transform.rotation.x = odom_msg.pose.pose.orientation.x
+                tf_odom.transform.rotation.y = odom_msg.pose.pose.orientation.y
+                tf_odom.transform.rotation.z = odom_msg.pose.pose.orientation.z
+                tf_odom.transform.rotation.w = odom_msg.pose.pose.orientation.w
+                tf_msg.transforms.append(tf_odom)
+                output_bag.write('/tf', tf_msg, t)
         else:
             output_bag.write(topic, msg, t)
 
@@ -158,6 +153,13 @@ if __name__ == '__main__':
             tf2_msg.transforms.append(tf2_lidar)
             output_bag.write('/tf_static', tf2_msg, t)
             first = False
+
+        #elif topic == '/tf_static':
+            #adding the missing transformations
+        #    tf2_msg = add_tfstatic(msg)
+        #    output_bag.write('/tf_static', tf2_msg, t)
+
+        # rewrite the rosbag
 
         if rospy.is_shutdown():
             break
