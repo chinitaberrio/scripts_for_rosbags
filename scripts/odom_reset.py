@@ -137,7 +137,7 @@ if __name__ == '__main__':
         else:
             output_bag.write(topic, msg, t)
 
-        if first:  # Change this for the other project
+        if first and args["add_tf_static"]:  # This needs a config file
             tf2_msg = TFMessage()
             tf2_lidar = geometry_msgs.msg.TransformStamped()
             tf2_lidar.header.frame_id = "base_link"
@@ -158,7 +158,6 @@ if __name__ == '__main__':
             #adding the missing transformations
         #    tf2_msg = add_tfstatic(msg)
         #    output_bag.write('/tf_static', tf2_msg, t)
-
         # rewrite the rosbag
 
         if rospy.is_shutdown():
