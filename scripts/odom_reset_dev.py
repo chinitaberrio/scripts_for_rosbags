@@ -134,25 +134,26 @@ if __name__ == '__main__':
                 tf_odom.transform.rotation.w = odom_msg.pose.pose.orientation.w
                 tf_msg.transforms.append(tf_odom)
                 output_bag.write('/tf', tf_msg, t)
+
+        elif topic == '/tf_static':  # This needs a config file
+            if first:
+                tf2_msg = TFMessage()
+                tf2_lidar = geometry_msgs.msg.TransformStamped()
+                tf2_lidar.header.frame_id = "base_link"
+                tf2_lidar.child_frame_id = "os_sensor"
+                tf2_lidar.header.stamp = msg.transforms[0].header.stamp #msg.header.stamp
+                tf2_lidar.transform.translation.x = 0.0#79
+                tf2_lidar.transform.translation.y = 0.0
+                tf2_lidar.transform.translation.z = 1.9#1.7
+                tf2_lidar.transform.rotation.x = 0.0#1
+                tf2_lidar.transform.rotation.y = 0.0#05
+                tf2_lidar.transform.rotation.z = 0.0#-0.00005
+                tf2_lidar.transform.rotation.w = 1.0#0.999937
+                tf2_msg.transforms.append(tf2_lidar)
+                output_bag.write('/tf_static', tf2_msg, t)
+                first = False
         else:
             output_bag.write(topic, msg, t)
-
-        if first and args["add_tf_static"] and topic != '/tf_static':  # This needs a config file
-            tf2_msg = TFMessage()
-            tf2_lidar = geometry_msgs.msg.TransformStamped()
-            tf2_lidar.header.frame_id = "base_link"
-            tf2_lidar.child_frame_id = "os_sensor"
-            tf2_lidar.header.stamp = msg.header.stamp
-            tf2_lidar.transform.translation.x = 0.0#79
-            tf2_lidar.transform.translation.y = 0.0
-            tf2_lidar.transform.translation.z = 1.9#1.7
-            tf2_lidar.transform.rotation.x = 0.0#1
-            tf2_lidar.transform.rotation.y = 0.0#05
-            tf2_lidar.transform.rotation.z = 0.0#-0.00005
-            tf2_lidar.transform.rotation.w = 1.0#0.999937
-            tf2_msg.transforms.append(tf2_lidar)
-            output_bag.write('/tf_static', tf2_msg, t)
-            first = False
 
         #elif topic == '/tf_static':
             #adding the missing transformations
