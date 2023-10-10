@@ -7,10 +7,9 @@ if __name__ == '__main__':
     # necessary input args
     ap = argparse.ArgumentParser()
     ap.add_argument("-b", "--bag", required=True, help="input bag file")
-    ap.add_argument("-r", "--replace", required=True, help="frame to replace base_link")
+    ap.add_argument("-s", "--time", required=True, help="time shift")
     args = vars(ap.parse_args())
-
-
+ 
     # check if bag exists
     if args["bag"] is None:
         rospy.logerr("No Bag specified!")
@@ -20,7 +19,7 @@ if __name__ == '__main__':
     bag_path = os.path.abspath(args["bag"])
     bag_name = os.path.basename(bag_path)
     
-    output_bag_name = bag_name.replace(".bag","_tf_frame_replaced.bag")
+    output_bag_name = bag_name.replace(".bag","_time_shift.bag")
     
     # output bag path and name
     output_bag_path = os.path.join(os.path.dirname(bag_path), output_bag_name)
@@ -31,12 +30,14 @@ if __name__ == '__main__':
             # This also replaces tf timestamps under the assumption 
             # that all transforms in the message share the same timestamp
             if (topic == "/tf" or topic == "/tf_static") and msg.transforms:
-                msg.transforms[0].child_frame_id = args["replace"]
+                msg.transforms[0].header.stamp.secs = msg.transforms[0].header.stamp.secs - int(args["time"])
                 outbag.write(topic, msg, msg.transforms[0].header.stamp)
+                print("Writing tf ")
 
             else:
-                msg.child_frame_id = args["replace"]
+                msg.header.stamp.secs = msg.header.stamp.secs - int(args["time"])
                 outbag.write(topic, msg, msg.header.stamp if msg._has_header else t)
+                print("Writing msg ")
 
     outbag.close()
     rospy.loginfo('Done writing new bag')
