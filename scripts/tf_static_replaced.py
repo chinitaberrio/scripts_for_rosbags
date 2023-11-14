@@ -54,9 +54,9 @@ if __name__ == '__main__':
                     msg.transforms[0].transform.rotation.y = new_tf_static[msg.transforms[0].child_frame_id]['rot_y']
                     msg.transforms[0].transform.rotation.z = new_tf_static[msg.transforms[0].child_frame_id]['rot_z']
                     msg.transforms[0].transform.rotation.w = new_tf_static[msg.transforms[0].child_frame_id]['rot_w']
-                outbag.write(topic, msg, msg.transforms[0].header.stamp)
+                outbag.write(topic, msg, t)
             else:
-                outbag.write(topic, msg, msg.header.stamp if msg._has_header else t)
+                outbag.write(topic, msg, t)
 
     outbag.close()
     rospy.loginfo('Done writing new bag')
