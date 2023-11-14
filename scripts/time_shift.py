@@ -19,7 +19,8 @@ if __name__ == '__main__':
     bag_path = os.path.abspath(args["bag"])
     bag_name = os.path.basename(bag_path)
     
-    output_bag_name = bag_name.replace(".bag","_time_shift.bag")
+    new_bag_name = "_time_shift_" +args["time"]+ "_0.bag"
+    output_bag_name = bag_name.replace(".bag",new_bag_name)
     
     # output bag path and name
     output_bag_path = os.path.join(os.path.dirname(bag_path), output_bag_name)
@@ -32,12 +33,10 @@ if __name__ == '__main__':
             if (topic == "/tf" or topic == "/tf_static") and msg.transforms:
                 msg.transforms[0].header.stamp.secs = msg.transforms[0].header.stamp.secs - int(args["time"])
                 outbag.write(topic, msg, msg.transforms[0].header.stamp)
-                print("Writing tf ")
 
             else:
                 msg.header.stamp.secs = msg.header.stamp.secs - int(args["time"])
                 outbag.write(topic, msg, msg.header.stamp if msg._has_header else t)
-                print("Writing msg ")
 
     outbag.close()
     rospy.loginfo('Done writing new bag')
