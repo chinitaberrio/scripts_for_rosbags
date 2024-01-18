@@ -16,7 +16,7 @@ if __name__ == '__main__':
     ap.add_argument("-b", "--bag_file", required=True, help="The rosbag you would like to extract images")
     ap.add_argument("-v", "--video_file", required=True, help="The mp4 video file for one camera")
     ap.add_argument("-r", "--rectify", default=False, help="Whether to rectify the extracted images.")
-    ap.add_argument("-d", "--divider", default=3, type=int, help="save image every DIVIDER frames")
+    ap.add_argument("-d", "--divider", default=1, type=int, help="save image every DIVIDER frames")
     ap.add_argument("-s", "--save_dir", default=None, help="save the extracted images")
     args = vars(ap.parse_args())
 
@@ -94,8 +94,7 @@ if __name__ == '__main__':
 
                 if args["save_dir"] and (msg.frame_counter % int(args["divider"])) == 0:
 
-                    cv2.imwrite(os.path.join(args["save_dir"],
-                                             'frame-' + str("%08d" % msg.frame_counter) + '-time-' + str(
+                    cv2.imwrite(os.path.join(args["save_dir"],  str(
                                                  msg.header.stamp) + '.png'), output_img)
                     print(str("%08d" % msg.frame_counter) + '.png')
 

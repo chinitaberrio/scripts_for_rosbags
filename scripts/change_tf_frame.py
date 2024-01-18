@@ -35,7 +35,7 @@ if __name__ == '__main__':
                 outbag.write(topic, msg, msg.transforms[0].header.stamp)
 
             else:
-                msg.child_frame_id = args["replace"]
+                #msg.child_frame_id = args["replace"]
                 outbag.write(topic, msg, msg.header.stamp if msg._has_header else t)
 
     outbag.close()
