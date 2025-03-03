@@ -15,7 +15,7 @@ def main():
     bags_list.sort()
     print(bags_list)
 
-    output_bag = bags_list[0].replace("0.bag","merged.bag")
+    output_bag = bags_list[0].replace(".bag","merged.bag")
     print(output_bag)
 
     with Bag(output_bag, 'w') as o: 
